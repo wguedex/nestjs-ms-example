@@ -1,0 +1,9 @@
+[submodule "clientGW-ms-example"]
+	path = clientGW-ms-example
+	url = https://github.com/wguedex/clientGW-ms-example.git
+[submodule "products-ms-example"]
+	path = products-ms-example
+	url = https://github.com/wguedex/products-ms-example.git
+[submodule "orders-ms-example"]
+	path = orders-ms-example
+	url = https://github.com/wguedex/orders-ms-example.git

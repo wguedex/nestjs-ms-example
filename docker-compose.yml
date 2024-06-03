@@ -8,20 +8,20 @@ services:
       - 8222:8222
 
   client-gateway:
-    build: ./02-client-gateway
+    build: ./clientGW-ms-example
     ports:
       - ${CLIENT_GATEWAY_PORT}:3000
     volumes:
-      - ./02-client-gateway/src:/usr/src/app/src
+      - ./clientGW-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3000
       - NATS_SERVERS=nats://nats-server:4222
     
   products-ms:
-    build: ./01-products-microservice
+    build: ./products-ms-example
     volumes:
-      - ./01-products-microservice/src:/usr/src/app/src
+      - ./products-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3001
@@ -29,9 +29,9 @@ services:
       - DATABASE_URL=file:./dev.db
 
   orders-ms:
-    build: ./03-orders-microservice
+    build: ./orders-ms-example
     volumes:
-      - ./03-orders-microservice/src:/usr/src/app/src
+      - ./orders-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - name=value
@@ -43,10 +43,10 @@ services:
    
   orders-db:
     container_name: ordersdb
-    image: postgres:14.3
+    image: postgres:alpine3.20
     restart: always
     volumes:
-      - ./03-orders-microservice/postgres:/var/lib/postgresql/data
+      - ./orders-ms-example/postgres:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     environment:
