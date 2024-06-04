@@ -7,3 +7,6 @@
 [submodule "orders-ms-example"]
 	path = orders-ms-example
 	url = https://github.com/wguedex/orders-ms-example.git
+[submodule "payments-ms-example"]
+	path = payments-ms-example
+	url = https://github.com/wguedex/payments-ms-example.git
