@@ -10,13 +10,17 @@ services:
   client-gateway:
     build: ./clientGW-ms-example
     ports:
-      - ${CLIENT_GATEWAY_PORT}:3000
+      - 3013:3000
+      # - ${CLIENT_GATEWAY_PORT}:3000
     volumes:
       - ./clientGW-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3000
       - NATS_SERVERS=nats://nats-server:4222
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     
   products-ms:
     build: ./products-ms-example
@@ -27,6 +31,9 @@ services:
       - PORT=3001
       - NATS_SERVERS=nats://nats-server:4222
       - DATABASE_URL=file:./dev.db
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   orders-ms:
     build: ./orders-ms-example
@@ -40,6 +47,9 @@ services:
       - NATS_SERVERS=nats://nats-server:4222 
     depends_on:
       - orders-db
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
    
   orders-db:
     container_name: ordersdb
@@ -53,14 +63,15 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
-
-# Payments Microservice
   payments-ms:
     container_name: payments-ms
     build: ./payments-ms-example
     ports:
-      - ${CLIENT_GATEWAY_PORT}:3000
+      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
     volumes:
       - ./payments-ms-example/src:/usr/src/app/src
     command: npm run start:dev
@@ -70,4 +81,7 @@ services:
       - STRIPE_SECRET=${STRIPE_SECRET}
       - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
       - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
-      - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}      
+      - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
