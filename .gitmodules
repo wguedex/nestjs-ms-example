@@ -10,3 +10,6 @@
 [submodule "payments-ms-example"]
 	path = payments-ms-example
 	url = https://github.com/wguedex/payments-ms-example.git
+[submodule "auth-ms-example"]
+	path = auth-ms-example
+	url = https://github.com/wguedex/auth-ms-example.git
