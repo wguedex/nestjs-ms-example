@@ -22,7 +22,20 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    
+
+  auth-ms:
+    build: ./auth-ms-example
+    volumes:
+      - ./auth-ms-example/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3004
+      - NATS_SERVERS=nats://nats-server:4222
+      # - DATABASE_URL=file:./dev.db
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4      
+
   products-ms:
     build: ./products-ms-example
     volumes:
