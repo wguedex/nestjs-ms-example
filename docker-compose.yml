@@ -31,7 +31,7 @@ services:
     environment:
       - PORT=3004
       - NATS_SERVERS=nats://nats-server:4222
-      # - DATABASE_URL=file:./dev.db
+      - DATABASE_URL=${DATABASE_MONGODB_URL}
     dns:
       - 8.8.8.8
       - 8.8.4.4      
