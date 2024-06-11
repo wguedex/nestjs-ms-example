@@ -1,0 +1,95 @@
+version: '3'
+
+services:
+
+  nats-server:
+    image: nats:latest
+  
+  client-gateway:
+    build:
+      context: ./clientGW-ms-example
+      dockerfile: dockerfile.prod
+    image: client-gateway-prod
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=nats://nats-server:4222
+ 
+  # auth-ms:
+  #   build: ./auth-ms-example
+  #   volumes:
+  #     - ./auth-ms-example/src:/usr/src/app/src
+  #   command: npm run start:dev
+  #   environment:
+  #     - PORT=3004
+  #     - NATS_SERVERS=nats://nats-server:4222
+  #     - DATABASE_URL=${DATABASE_MONGODB_URL}
+  #     - JWT_SECRET=${JWT_SECRET}
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4      
+
+  # products-ms:
+  #   build: ./products-ms-example
+  #   volumes:
+  #     - ./products-ms-example/src:/usr/src/app/src
+  #   command: npm run start:dev
+  #   environment:
+  #     - PORT=3001
+  #     - NATS_SERVERS=nats://nats-server:4222
+  #     - DATABASE_URL=file:./dev.db
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
+
+  # orders-ms:
+  #   build: ./orders-ms-example
+  #   volumes:
+  #     - ./orders-ms-example/src:/usr/src/app/src
+  #   command: npm run start:dev
+  #   environment:
+  #     - name=value
+  #     - PORT=3002
+  #     - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@orders-db:5432/${DB_NAME}?schema=public
+  #     - NATS_SERVERS=nats://nats-server:4222 
+  #   depends_on:
+  #     - orders-db
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
+   
+  # orders-db:
+  #   container_name: ordersdb
+  #   image: postgres:alpine3.20
+  #   restart: always
+  #   volumes:
+  #     - ./orders-ms-example/postgres:/var/lib/postgresql/data
+  #   ports:
+  #     - "5433:5432"
+  #   environment:
+  #     POSTGRES_USER: ${DB_USERNAME}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${DB_NAME}
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
+
+  # payments-ms:
+  #   container_name: payments-ms
+  #   build: ./payments-ms-example
+  #   ports:
+  #     - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
+  #   volumes:
+  #     - ./payments-ms-example/src:/usr/src/app/src
+  #   command: npm run start:dev
+  #   environment:
+  #     - PORT=${PAYMENTS_MS_PORT}
+  #     - NATS_SERVERS=nats://nats-server:4222 
+  #     - STRIPE_SECRET=${STRIPE_SECRET}
+  #     - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
+  #     - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
+  #     - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
