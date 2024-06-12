@@ -16,19 +16,17 @@ services:
       - PORT=${CLIENT_GATEWAY_PORT}
       - NATS_SERVERS=nats://nats-server:4222
  
-  # auth-ms:
-  #   build: ./auth-ms-example
-  #   volumes:
-  #     - ./auth-ms-example/src:/usr/src/app/src
-  #   command: npm run start:dev
-  #   environment:
-  #     - PORT=3004
-  #     - NATS_SERVERS=nats://nats-server:4222
-  #     - DATABASE_URL=${DATABASE_MONGODB_URL}
-  #     - JWT_SECRET=${JWT_SECRET}
-  #   dns:
-  #     - 8.8.8.8
-  #     - 8.8.4.4      
+  auth-ms:
+    build:
+      context: ./auth-ms-example
+      dockerfile: dockerfile.prod    
+    image: auth-ms-prod      
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=${DATABASE_MONGODB_URL}
+      - JWT_SECRET=${JWT_SECRET}
+   
 
   # products-ms:
   #   build: ./products-ms-example
