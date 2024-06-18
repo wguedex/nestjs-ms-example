@@ -1,7 +1,6 @@
-version: '3'
+version: '3.8'
 
 services:
-
   nats-server:
     image: nats:latest
     ports:
@@ -10,28 +9,31 @@ services:
 
   client-gateway:
     build: ./clientGW-ms-example
+    depends_on:
+      - nats-server
     ports:
-      - 3013:3000
-      # - ${CLIENT_GATEWAY_PORT}:3000
+      - ${CLIENT_GATEWAY_PORT}:3000
     volumes:
       - ./clientGW-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
-      - PORT=3000
-      - NATS_SERVERS=nats://nats-server:4222
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
     dns:
       - 8.8.8.8
       - 8.8.4.4
 
   auth-ms:
     build: ./auth-ms-example
+    depends_on:
+      - nats-server
     volumes:
       - ./auth-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3004
-      - NATS_SERVERS=nats://nats-server:4222
-      - DATABASE_URL=${DATABASE_MONGODB_URL}
+      - NATS_SERVERS=${NATS_SERVERS}
+      - DATABASE_URL=${AUTH_DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
     dns:
       - 8.8.8.8
@@ -39,12 +41,14 @@ services:
 
   products-ms:
     build: ./products-ms-example
+    depends_on:
+      - nats-server
     volumes:
       - ./products-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3001
-      - NATS_SERVERS=nats://nats-server:4222
+      - NATS_SERVERS=${NATS_SERVERS}
       - DATABASE_URL=file:./dev.db
     dns:
       - 8.8.8.8
@@ -52,23 +56,23 @@ services:
 
   orders-ms:
     build: ./orders-ms-example
+    depends_on:
+      - nats-server
+      - orders-db
     volumes:
       - ./orders-ms-example/src:/usr/src/app/src
     command: npm run start:dev
     environment:
-      - name=value
       - PORT=3002
-      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@orders-db:5432/${DB_NAME}?schema=public
-      - NATS_SERVERS=nats://nats-server:4222 
-    depends_on:
-      - orders-db
+      - DATABASE_URL=${ORDERS_DATABASE_URL}
+      - NATS_SERVERS=${NATS_SERVERS}
     dns:
       - 8.8.8.8
       - 8.8.4.4
    
   orders-db:
     container_name: ordersdb
-    image: postgres:alpine3.20
+    image: postgres:14
     restart: always
     volumes:
       - ./orders-ms-example/postgres:/var/lib/postgresql/data
@@ -85,6 +89,8 @@ services:
   payments-ms:
     container_name: payments-ms
     build: ./payments-ms-example
+    depends_on:
+      - nats-server
     ports:
       - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
     volumes:
@@ -92,7 +98,7 @@ services:
     command: npm run start:dev
     environment:
       - PORT=${PAYMENTS_MS_PORT}
-      - NATS_SERVERS=nats://nats-server:4222 
+      - NATS_SERVERS=${NATS_SERVERS}
       - STRIPE_SECRET=${STRIPE_SECRET}
       - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
       - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}

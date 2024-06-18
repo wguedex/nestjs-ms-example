@@ -1,7 +1,6 @@
-version: '3'
+version: '3.8'
 
 services:
-
   nats-server:
     image: nats:latest
   
@@ -14,43 +13,57 @@ services:
       - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
     environment:
       - PORT=${CLIENT_GATEWAY_PORT}
-      - NATS_SERVERS=nats://nats-server:4222
+      - NATS_SERVERS=${NATS_SERVERS}
  
   auth-ms:
     build:
       context: ./auth-ms-example
       dockerfile: dockerfile.prod    
-    image: auth-ms-prod      
+    image: auth-ms-prod
+    ports:
+      - ${AUTH_MS_PORT}:${AUTH_MS_PORT}  # Asegúrate de definir AUTH_MS_PORT en tu archivo .env
     environment:
-      - PORT=3000
-      - NATS_SERVERS=nats://nats-server:4222
-      - DATABASE_URL=${DATABASE_MONGODB_URL}
+      - PORT=${AUTH_MS_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
+      - DATABASE_URL=${AUTH_DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
-   
 
-  # products-ms:
-  #   build: ./products-ms-example
-  #   volumes:
-  #     - ./products-ms-example/src:/usr/src/app/src
-  #   command: npm run start:dev
-  #   environment:
-  #     - PORT=3001
-  #     - NATS_SERVERS=nats://nats-server:4222
-  #     - DATABASE_URL=file:./dev.db
-  #   dns:
-  #     - 8.8.8.8
-  #     - 8.8.4.4
+  products-ms:
+    build: 
+      context: ./products-ms-example 
+      dockerfile: dockerfile.prod    
+    image: products-ms-prod
+    ports:
+      - ${PRODUCTS_MS_PORT}:${PRODUCTS_MS_PORT}  # Asegúrate de definir PRODUCTS_MS_PORT en tu archivo .env
+    environment:
+      - PORT=${PRODUCTS_MS_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
+      - DATABASE_URL=file:./dev.db 
 
+  payments-ms:
+    build:
+      context: ./payments-ms-example
+      dockerfile: dockerfile.prod    
+    image: payments-ms-prod
+    ports:
+      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}  # Asegúrate de definir PAYMENTS_MS_PORT en tu archivo .env
+    environment:
+      - PORT=${PAYMENTS_MS_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
+      - STRIPE_SECRET=${STRIPE_SECRET}
+      - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
+      - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
+      - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
+ 
   # orders-ms:
   #   build: ./orders-ms-example
   #   volumes:
   #     - ./orders-ms-example/src:/usr/src/app/src
   #   command: npm run start:dev
   #   environment:
-  #     - name=value
   #     - PORT=3002
-  #     - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@orders-db:5432/${DB_NAME}?schema=public
-  #     - NATS_SERVERS=nats://nats-server:4222 
+  #     - DATABASE_URL=${ORDERS_DATABASE_URL}
+  #     - NATS_SERVERS=${NATS_SERVERS}
   #   depends_on:
   #     - orders-db
   #   dns:
@@ -69,25 +82,6 @@ services:
   #     POSTGRES_USER: ${DB_USERNAME}
   #     POSTGRES_PASSWORD: ${DB_PASSWORD}
   #     POSTGRES_DB: ${DB_NAME}
-  #   dns:
-  #     - 8.8.8.8
-  #     - 8.8.4.4
-
-  # payments-ms:
-  #   container_name: payments-ms
-  #   build: ./payments-ms-example
-  #   ports:
-  #     - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
-  #   volumes:
-  #     - ./payments-ms-example/src:/usr/src/app/src
-  #   command: npm run start:dev
-  #   environment:
-  #     - PORT=${PAYMENTS_MS_PORT}
-  #     - NATS_SERVERS=nats://nats-server:4222 
-  #     - STRIPE_SECRET=${STRIPE_SECRET}
-  #     - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
-  #     - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
-  #     - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
   #   dns:
   #     - 8.8.8.8
   #     - 8.8.4.4
