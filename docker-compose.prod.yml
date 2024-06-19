@@ -21,7 +21,7 @@ services:
       dockerfile: dockerfile.prod    
     image: auth-ms-prod
     ports:
-      - ${AUTH_MS_PORT}:${AUTH_MS_PORT}  # Asegúrate de definir AUTH_MS_PORT en tu archivo .env
+      - ${AUTH_MS_PORT}:${AUTH_MS_PORT}  
     environment:
       - PORT=${AUTH_MS_PORT}
       - NATS_SERVERS=${NATS_SERVERS}
@@ -34,7 +34,7 @@ services:
       dockerfile: dockerfile.prod    
     image: products-ms-prod
     ports:
-      - ${PRODUCTS_MS_PORT}:${PRODUCTS_MS_PORT}  # Asegúrate de definir PRODUCTS_MS_PORT en tu archivo .env
+      - ${PRODUCTS_MS_PORT}:${PRODUCTS_MS_PORT}  
     environment:
       - PORT=${PRODUCTS_MS_PORT}
       - NATS_SERVERS=${NATS_SERVERS}
@@ -46,7 +46,7 @@ services:
       dockerfile: dockerfile.prod    
     image: payments-ms-prod
     ports:
-      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}  # Asegúrate de definir PAYMENTS_MS_PORT en tu archivo .env
+      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}   
     environment:
       - PORT=${PAYMENTS_MS_PORT}
       - NATS_SERVERS=${NATS_SERVERS}
@@ -55,33 +55,15 @@ services:
       - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
       - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
  
-  # orders-ms:
-  #   build: ./orders-ms-example
-  #   volumes:
-  #     - ./orders-ms-example/src:/usr/src/app/src
-  #   command: npm run start:dev
-  #   environment:
-  #     - PORT=3002
-  #     - DATABASE_URL=${ORDERS_DATABASE_URL}
-  #     - NATS_SERVERS=${NATS_SERVERS}
-  #   depends_on:
-  #     - orders-db
-  #   dns:
-  #     - 8.8.8.8
-  #     - 8.8.4.4
-   
-  # orders-db:
-  #   container_name: ordersdb
-  #   image: postgres:alpine3.20
-  #   restart: always
-  #   volumes:
-  #     - ./orders-ms-example/postgres:/var/lib/postgresql/data
-  #   ports:
-  #     - "5433:5432"
-  #   environment:
-  #     POSTGRES_USER: ${DB_USERNAME}
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #     POSTGRES_DB: ${DB_NAME}
-  #   dns:
-  #     - 8.8.8.8
-  #     - 8.8.4.4
+  orders-ms:
+    build: 
+      context: ./orders-ms-example 
+      dockerfile: dockerfile.prod 
+      args:
+        - ORDERS_DATABASE_URL=${ORDERS_DATABASE_URL}         
+    image: orders-ms-prod 
+    environment:
+      - PORT=3000
+      - DATABASE_URL=${ORDERS_DATABASE_URL}
+      - NATS_SERVERS=${NATS_SERVERS}
+ 
