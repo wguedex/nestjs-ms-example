@@ -8,7 +8,7 @@ services:
     build:
       context: ./clientGW-ms-example
       dockerfile: dockerfile.prod
-    image: client-gateway-prod
+    image: northamerica-northeast1-docker.pkg.dev/tienda-microservices-427201/image-registry/client-gateway
     ports:
       - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
     environment:
@@ -29,22 +29,24 @@ services:
       - JWT_SECRET=${JWT_SECRET}
 
   products-ms:
-    build: 
+    build:
       context: ./products-ms-example 
-      dockerfile: dockerfile.prod    
-    image: products-ms-prod
-    ports:
-      - ${PRODUCTS_MS_PORT}:${PRODUCTS_MS_PORT}  
+      dockerfile: dockerfile.prod
+    volumes:
+      - ./products-ms-example/prisma:/usr/src/app/prisma
+    image: northamerica-northeast1-docker.pkg.dev/tienda-microservices-427201/image-registry/products-ms  
     environment:
-      - PORT=${PRODUCTS_MS_PORT}
-      - NATS_SERVERS=${NATS_SERVERS}
-      - DATABASE_URL=file:./dev.db 
-
+      - PORT=3002
+      - DATABASE_URL=file:/usr/src/app/prisma/dev.db
+      - NATS_SERVERS=nats://nats-server:4222,nats://nats-server:4223
+    ports:
+      - 3002:3002
+ 
   payments-ms:
     build:
       context: ./payments-ms-example
       dockerfile: dockerfile.prod    
-    image: payments-ms-prod
+    image: northamerica-northeast1-docker.pkg.dev/tienda-microservices-427201/image-registry/payments-ms
     ports:
       - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}   
     environment:
@@ -54,14 +56,16 @@ services:
       - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
       - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
       - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
- 
+    depends_on:
+      - nats-server
+
   orders-ms:
     build: 
       context: ./orders-ms-example 
       dockerfile: dockerfile.prod 
       args:
         - ORDERS_DATABASE_URL=${ORDERS_DATABASE_URL}         
-    image: orders-ms-prod 
+    image: northamerica-northeast1-docker.pkg.dev/tienda-microservices-427201/image-registry/orders-ms
     environment:
       - PORT=3000
       - DATABASE_URL=${ORDERS_DATABASE_URL}
