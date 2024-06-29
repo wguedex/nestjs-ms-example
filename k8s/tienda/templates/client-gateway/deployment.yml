@@ -24,6 +24,6 @@ spec:
         - name: PORT
           value: "3000"
         - name: NATS_SERVERS
-          value: "nats://localhost:4222"        
+          value: "nats://nats:4222"  
         resources: {}
 status: {}
