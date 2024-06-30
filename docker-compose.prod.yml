@@ -19,7 +19,7 @@ services:
     build:
       context: ./auth-ms-example
       dockerfile: dockerfile.prod    
-    image: auth-ms-prod
+    image: northamerica-northeast1-docker.pkg.dev/tienda-microservices-427201/image-registry/auth-ms
     ports:
       - ${AUTH_MS_PORT}:${AUTH_MS_PORT}  
     environment:
