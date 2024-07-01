@@ -39,5 +39,11 @@ spec:
             secretKeyRef:
               name: payments-secrets
               key: stripe_endpoint_secret                
-        resources: {}
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
 status: {}

@@ -27,5 +27,11 @@ spec:
           value: "file:/usr/src/app/prisma/dev.db"        
         - name: NATS_SERVERS
           value: "nats://nats:4222"          
-        resources: {}
+        # resources:
+        #   limits:
+        #     cpu: "100m"
+        #     memory: "256Mi"
+        #   requests:
+        #     cpu: "100m"
+        #     memory: "256Mi"
 status: {}
